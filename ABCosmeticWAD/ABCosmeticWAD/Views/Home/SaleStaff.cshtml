@@ -1,0 +1,97 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Common
+@model StaffModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    List<StaffModel> list = ViewBag.List;
+}
+@section section{
+    Sales Staffs
+}
+@if (TempData["error"] != null)
+{
+    <p class="text-center text-danger">@TempData["error"]</p>
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fa fa-table"></i> Sales Staffs List
+        <a href="@Url.Action("CreateStaff", "Home")" class="btn btn-primary float-right">New staff</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" style="width:100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Staff ID</th>
+                        <th>Staff Name</th>
+                        <th>Gender</th>
+                        <th>Date of birth</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Store</th>
+                        <th>Position</th>
+                        <th>Phone number</th>
+                        <th>Detail</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (StaffModel s in list)
+                    {
+                        <tr>
+                            <td>@s.StaffID</td>
+                            <td>@s.StaffName</td>
+                            <td>@s.Gender</td>
+                            <td>@s.DateOfBirth</td>
+                            <td>@s.Email</td>
+                            <td>@s.Address</td>
+                            <td>@s.StoreName</td>
+                            <td>@s.GroupName</td>
+                            <td>@s.PhoneNumber</td>
+                            <td class="text-center">
+                                <a href="@Url.Action("StaffDetail", "Home", routeValues: new { id = s.StaffID })">
+                                    <i class="fa fa-sticky-note-o"></i>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="@Url.Action("DeleteStaff", "Home", routeValues: new { id = s.StaffID })">
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Script{
+    <script>
+        $(document).ready(function () {
+            $("#edit").hide();
+            // Add smooth scrolling to all links
+            $("a").on('click', function (event) {
+
+                // Make sure this.hash has a value before overriding default behavior
+                if (this.hash !== "") {
+                    // Prevent default anchor click behavior
+                    event.preventDefault();
+
+                    // Store hash
+                    var hash = this.hash;
+
+                    // Using jQuery's animate() method to add smooth page scroll
+                    // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+                    $('html, body').animate({
+                        scrollTop: $(hash).offset().top
+                    }, 1500, function () {
+
+                        // Add hash (#) to URL when done scrolling (default click behavior)
+                        window.location.hash = hash;
+                    });
+                } // End if
+            });
+        });
+    </script>
+}

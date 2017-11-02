@@ -1,0 +1,148 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Models
+@{
+    List<Salary> list = ViewBag.List;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ABCosmeticEntities db = new ABCosmeticEntities();
+}
+@section section{
+    Salary
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h5>View reports by:&nbsp;<span><a href="#" onclick="monthForm()" class="btn btn-outline-info">Month</a>&nbsp;<a href="#" onclick="weekForm()" class="btn btn-outline-info">Week</a>&nbsp;<a href="#" onclick="dateForm()" class="btn btn-outline-info">Date range</a></span></h5>
+    </div>
+    <div class="col-lg-12" id="month">
+        <form method="get" action="/Home/ViewReportSalaryByMonth" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>Month:&nbsp;</label>
+                <input type="month" id="monthBox" name="month" required class="form-control input-sm" />&nbsp;
+                <input type="submit" class="btn btn-outline-info" value="View" />
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12" id="week">
+        <form action="/Home/ViewReportSalaryByDate" method="get" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>From date:&nbsp;</label>
+                <input type="date" onchange="fromDate()" required id="from" name="from" class="form-control input-sm" />&nbsp;
+                <label>- To date:&nbsp;</label>
+                <input type="date" name="to" id="to" required class="form-control input-sm" onchange="toDate()" />&nbsp;
+                <input type="submit" class="btn btn-outline-info" value="View" />
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12" id="date">
+        <form action="/Home/ViewReportSalaryByDate" method="get" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>From date:&nbsp;</label>
+                <input type="date" id="fromDate" required name="from" class="form-control input-sm" />&nbsp;
+                <label>- To date:&nbsp;</label>
+                <input type="date" name="to" id="toDate" required class="form-control input-sm" />&nbsp;
+                <input type="submit" class="btn btn-outline-info" value="View" />
+            </div>
+        </form>
+    </div>
+</div>
+<hr />
+<div class="card">
+    <div class="card-header text-center">
+        <h5>Salary</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered" id="dataTable" style="width:100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Staff Name</th>
+                    <th>Base salary</th>
+                    <th>Bonus</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (list != null)
+                {
+                    foreach (Salary sal in list)
+                    {
+                        var position = db.Staffs.SingleOrDefault(s => s.StaffID == sal.StaffID).GroupID;
+                        string pos = null;
+                        if (position == "MANAGER")
+                        {
+                            pos = "Manager";
+                        }
+                        if (position == "STAFF")
+                        {
+                            pos = "Staff";
+                        }
+                        if (sal.Bonus == null)
+                        {
+                            sal.Bonus = 0;
+                        }
+                        if (sal.BaseSalary == null)
+                        {
+                            sal.BaseSalary = 0;
+                        }
+                        <tr>
+                            <td>@sal.StaffID</td>
+                            <td><a href="@Url.Action((pos + "Detail"), "Home", routeValues: new { id = sal.StaffID })">@sal.StaffName</a></td>
+                            <td>$@sal.BaseSalary</td>
+                            <td>$@sal.Bonus</td>
+                            <td>$@(sal.BaseSalary + sal.Bonus)</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Script{
+    <script>
+        $(document).ready(function () {
+            $("#month").hide();
+            $("#week").hide();
+            $("#date").hide();
+        });
+        function monthForm() {
+            $("#month").show();
+            $("#week").hide();
+            $("#date").hide();
+        };
+
+        function weekForm() {
+            $("#week").show();
+            $("#month").hide();
+            $("#date").hide();
+        }
+
+        function dateForm() {
+            $("#month").hide();
+            $("#week").hide();
+            $("#date").show();
+        }
+
+        function fromDate() {
+            var fromDate = new Date($("#from").val());
+            var newDate = new Date(fromDate);
+            newDate.setDate(newDate.getDate() + 7);
+            var toDate = new Date(newDate);
+            var day = ("0" + toDate.getDate()).slice(-2);
+            var month = ("0" + (toDate.getMonth() + 1)).slice(-2);
+            var to = toDate.getFullYear() + "-" + (month) + "-" + (day);
+            $("#to").val(to);
+        }
+
+        function toDate() {
+            var toDate = new Date($("#to").val());
+            var newDate = new Date(toDate);
+            newDate.setDate(newDate.getDate() - 7);
+            var fromDate = new Date(newDate);
+            var day = ("0" + fromDate.getDate()).slice(-2);
+            var month = ("0" + (fromDate.getMonth() + 1)).slice(-2);
+            var from = fromDate.getFullYear() + "-" + (month) + "-" + (day);
+            $("#from").val(from);
+        }
+    </script>
+}

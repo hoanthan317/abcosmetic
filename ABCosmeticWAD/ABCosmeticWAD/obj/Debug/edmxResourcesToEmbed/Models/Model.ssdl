@@ -1,0 +1,357 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ABCosmeticModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="Brand">
+    <Key>
+      <PropertyRef Name="BrandID" />
+    </Key>
+    <Property Name="BrandID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BrandName" Type="varchar" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="Credential">
+    <Key>
+      <PropertyRef Name="GroupID" />
+      <PropertyRef Name="ActionID" />
+    </Key>
+    <Property Name="GroupID" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="ActionID" Type="varchar" MaxLength="50" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Order">
+    <Key>
+      <PropertyRef Name="OrderID" />
+    </Key>
+    <Property Name="OrderID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="StaffID" Type="int" />
+    <Property Name="ShippingAddress" Type="nvarchar" MaxLength="50" />
+    <Property Name="ShippingProvince" Type="nvarchar" MaxLength="50" />
+    <Property Name="ShippingDisctrict" Type="nvarchar" MaxLength="50" />
+    <Property Name="Note" Type="nvarchar" MaxLength="500" />
+    <Property Name="OrderDate" Type="date" />
+    <Property Name="ShipDate" Type="date" />
+    <Property Name="CreatedDate" Type="datetime" />
+    <Property Name="ModifiedDate" Type="datetime" />
+    <Property Name="StatusID" Type="int" />
+    <Property Name="CustomerName" Type="nvarchar" MaxLength="200" />
+    <Property Name="ContactPhone" Type="varchar" MaxLength="50" />
+    <Property Name="PaymentMethodID" Type="varchar" MaxLength="50" />
+    <Property Name="StoreName" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="OrderProduct">
+    <Key>
+      <PropertyRef Name="OrderID" />
+      <PropertyRef Name="ProductID" />
+    </Key>
+    <Property Name="OrderID" Type="int" Nullable="false" />
+    <Property Name="ProductID" Type="int" Nullable="false" />
+    <Property Name="Quantity" Type="int" />
+    <Property Name="Price" Type="float" />
+  </EntityType>
+  <EntityType Name="OrderStatus">
+    <Key>
+      <PropertyRef Name="StatusID" />
+    </Key>
+    <Property Name="StatusID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="StatusName" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="PaymentMethod">
+    <Key>
+      <PropertyRef Name="PaymentMethodID" />
+    </Key>
+    <Property Name="PaymentMethodID" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="PaymentMethodName" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="Product">
+    <Key>
+      <PropertyRef Name="ProductID" />
+    </Key>
+    <Property Name="ProductID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ProductCateID" Type="int" />
+    <Property Name="BrandID" Type="int" />
+    <Property Name="Model" Type="nvarchar" MaxLength="500" />
+    <Property Name="ProductName" Type="nvarchar" MaxLength="500" />
+    <Property Name="Description" Type="nvarchar(max)" />
+    <Property Name="Detail" Type="nvarchar(max)" />
+    <Property Name="UnitInStock" Type="int" />
+    <Property Name="UnitPrice" Type="float" />
+    <Property Name="Viewed" Type="int" />
+    <Property Name="Rate" Type="float" />
+    <Property Name="CreatedDate" Type="datetime" />
+    <Property Name="ModifiedDate" Type="datetime" />
+  </EntityType>
+  <EntityType Name="ProductCategories">
+    <Key>
+      <PropertyRef Name="ProductCateID" />
+    </Key>
+    <Property Name="ProductCateID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ProductCateParentsID" Type="int" />
+    <Property Name="CategoriesName" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="Staff">
+    <Key>
+      <PropertyRef Name="StaffID" />
+    </Key>
+    <Property Name="StaffID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="StaffName" Type="nvarchar" MaxLength="50" />
+    <Property Name="DateOfBirth" Type="date" />
+    <Property Name="Email" Type="nvarchar" MaxLength="250" />
+    <Property Name="Address" Type="nvarchar" MaxLength="500" />
+    <Property Name="Status" Type="bit" />
+    <Property Name="Password" Type="varchar" MaxLength="50" />
+    <Property Name="StoreID" Type="int" />
+    <Property Name="Gender" Type="varchar" MaxLength="50" />
+    <Property Name="PhoneNumber" Type="varchar" MaxLength="50" />
+    <Property Name="GroupID" Type="varchar" MaxLength="50" />
+    <Property Name="BaseSalary" Type="float" />
+  </EntityType>
+  <EntityType Name="Store">
+    <Key>
+      <PropertyRef Name="StoreID" />
+    </Key>
+    <Property Name="StoreID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="StoreName" Type="nvarchar" MaxLength="200" />
+    <Property Name="StoreAddress" Type="nvarchar" MaxLength="500" />
+    <Property Name="StoreEmail" Type="nvarchar" MaxLength="200" />
+    <Property Name="StorePhone" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="UserActions">
+    <Key>
+      <PropertyRef Name="ActionID" />
+    </Key>
+    <Property Name="ActionID" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="ActionName" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="UserGroup">
+    <Key>
+      <PropertyRef Name="GroupID" />
+    </Key>
+    <Property Name="GroupID" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="GroupName" Type="varchar" MaxLength="50" />
+  </EntityType>
+  <Association Name="FK_Order_OrderStatus">
+    <End Role="OrderStatus" Type="Self.OrderStatus" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Order" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="OrderStatus">
+        <PropertyRef Name="StatusID" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="StatusID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Order_PaymentMethod">
+    <End Role="PaymentMethod" Type="Self.PaymentMethod" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Order" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PaymentMethod">
+        <PropertyRef Name="PaymentMethodID" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="PaymentMethodID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Order_Staff">
+    <End Role="Staff" Type="Self.Staff" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Order" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Staff">
+        <PropertyRef Name="StaffID" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="StaffID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OrderProduct_Order">
+    <End Role="Order" Type="Self.Order" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="OrderID" />
+      </Principal>
+      <Dependent Role="OrderProduct">
+        <PropertyRef Name="OrderID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OrderProduct_Product">
+    <End Role="Product" Type="Self.Product" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="ProductID" />
+      </Principal>
+      <Dependent Role="OrderProduct">
+        <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Permissions_Actions">
+    <End Role="UserActions" Type="Self.UserActions" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Credential" Type="Self.Credential" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="UserActions">
+        <PropertyRef Name="ActionID" />
+      </Principal>
+      <Dependent Role="Credential">
+        <PropertyRef Name="ActionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Permissions_UserGroup">
+    <End Role="UserGroup" Type="Self.UserGroup" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Credential" Type="Self.Credential" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="UserGroup">
+        <PropertyRef Name="GroupID" />
+      </Principal>
+      <Dependent Role="Credential">
+        <PropertyRef Name="GroupID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Product_Brand">
+    <End Role="Brand" Type="Self.Brand" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Product" Type="Self.Product" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Brand">
+        <PropertyRef Name="BrandID" />
+      </Principal>
+      <Dependent Role="Product">
+        <PropertyRef Name="BrandID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Product_ProductCategories">
+    <End Role="ProductCategories" Type="Self.ProductCategories" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Product" Type="Self.Product" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ProductCategories">
+        <PropertyRef Name="ProductCateID" />
+      </Principal>
+      <Dependent Role="Product">
+        <PropertyRef Name="ProductCateID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductCategories_ProductCategories">
+    <End Role="ProductCategories" Type="Self.ProductCategories" Multiplicity="0..1" />
+    <End Role="ProductCategories1" Type="Self.ProductCategories" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ProductCategories">
+        <PropertyRef Name="ProductCateID" />
+      </Principal>
+      <Dependent Role="ProductCategories1">
+        <PropertyRef Name="ProductCateParentsID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Staff_Store">
+    <End Role="Store" Type="Self.Store" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Staff" Type="Self.Staff" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Store">
+        <PropertyRef Name="StoreID" />
+      </Principal>
+      <Dependent Role="Staff">
+        <PropertyRef Name="StoreID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Staff_UserGroup">
+    <End Role="UserGroup" Type="Self.UserGroup" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Staff" Type="Self.Staff" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="UserGroup">
+        <PropertyRef Name="GroupID" />
+      </Principal>
+      <Dependent Role="Staff">
+        <PropertyRef Name="GroupID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ABCosmeticModelStoreContainer">
+    <EntitySet Name="Brand" EntityType="Self.Brand" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Credential" EntityType="Self.Credential" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="OrderProduct" EntityType="Self.OrderProduct" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="OrderStatus" EntityType="Self.OrderStatus" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="PaymentMethod" EntityType="Self.PaymentMethod" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="ProductCategories" EntityType="Self.ProductCategories" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Staff" EntityType="Self.Staff" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="Store" EntityType="Self.Store" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="UserActions" EntityType="Self.UserActions" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="UserGroup" EntityType="Self.UserGroup" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_Order_OrderStatus" Association="Self.FK_Order_OrderStatus">
+      <End Role="OrderStatus" EntitySet="OrderStatus" />
+      <End Role="Order" EntitySet="Order" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Order_PaymentMethod" Association="Self.FK_Order_PaymentMethod">
+      <End Role="PaymentMethod" EntitySet="PaymentMethod" />
+      <End Role="Order" EntitySet="Order" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Order_Staff" Association="Self.FK_Order_Staff">
+      <End Role="Staff" EntitySet="Staff" />
+      <End Role="Order" EntitySet="Order" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OrderProduct_Order" Association="Self.FK_OrderProduct_Order">
+      <End Role="Order" EntitySet="Order" />
+      <End Role="OrderProduct" EntitySet="OrderProduct" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OrderProduct_Product" Association="Self.FK_OrderProduct_Product">
+      <End Role="Product" EntitySet="Product" />
+      <End Role="OrderProduct" EntitySet="OrderProduct" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Permissions_Actions" Association="Self.FK_Permissions_Actions">
+      <End Role="UserActions" EntitySet="UserActions" />
+      <End Role="Credential" EntitySet="Credential" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Permissions_UserGroup" Association="Self.FK_Permissions_UserGroup">
+      <End Role="UserGroup" EntitySet="UserGroup" />
+      <End Role="Credential" EntitySet="Credential" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Product_Brand" Association="Self.FK_Product_Brand">
+      <End Role="Brand" EntitySet="Brand" />
+      <End Role="Product" EntitySet="Product" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Product_ProductCategories" Association="Self.FK_Product_ProductCategories">
+      <End Role="ProductCategories" EntitySet="ProductCategories" />
+      <End Role="Product" EntitySet="Product" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductCategories_ProductCategories" Association="Self.FK_ProductCategories_ProductCategories">
+      <End Role="ProductCategories" EntitySet="ProductCategories" />
+      <End Role="ProductCategories1" EntitySet="ProductCategories" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Staff_Store" Association="Self.FK_Staff_Store">
+      <End Role="Store" EntitySet="Store" />
+      <End Role="Staff" EntitySet="Staff" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Staff_UserGroup" Association="Self.FK_Staff_UserGroup">
+      <End Role="UserGroup" EntitySet="UserGroup" />
+      <End Role="Staff" EntitySet="Staff" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

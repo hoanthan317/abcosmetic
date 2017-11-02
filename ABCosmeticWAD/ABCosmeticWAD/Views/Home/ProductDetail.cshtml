@@ -1,0 +1,146 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Models
+@using ABCosmeticWAD.Common
+@model ProductModel
+@using System.Web.Script.Serialization
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ProductModel pro = ViewBag.Product;
+    Staff userSession = (Staff)Session[CommonConstants.USER_SESSION];
+    var objX = new JavaScriptSerializer().Serialize(pro);
+}
+
+@section section{
+    Product Detail
+}
+<div class="row">
+    <div class="col-lg-3">
+        <img src="~/Assets/Admin/images/no_image.jpg" />
+    </div>
+    <div class="col-lg-9">
+        <p class="text-capitalize">Product ID: <span class="text-info">@pro.ProductID</span></p>
+        <p class="text-capitalize">Product Name: <span class="text-info">@pro.ProductName</span></p>
+        <p class="text-capitalize">Brand: <span class="text-info">@pro.Brand</span></p>
+        <p class="text-capitalize">Category: <span class="text-info">@pro.ProductCate</span></p>
+        <p class="text-capitalize">Model: <span class="text-info">@pro.Model</span></p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-capitalize">Description: <span class="text-info">@pro.Description</span></p>
+        <p class="text-capitalize">Detail: <span class="text-info">@pro.Detail</span></p>
+        <p class="text-capitalize">Instock: <span class="text-info">@pro.UnitInStock</span></p>
+        <p class="text-capitalize">Price: <span class="text-info">$@pro.UnitPrice</span></p>
+        <p class="text-capitalize">Created Date: <span class="text-info">@pro.CreatedDate</span></p>
+        <p class="text-capitalize">Last modified date: <span class="text-info">@pro.ModifiedDate</span></p>
+    </div>
+    <div class="col-lg-4">
+        @if (userSession.GroupID != "MANAGER" && userSession.GroupID != "ADMIN")
+        {
+            <a class="btn btn-primary disabled" ng-click="edit(@objX)" href="#edit"><i class="fa fa-edit"></i> Edit</a>
+            <a class="btn btn-primary disabled" href="@Url.Action("DeleteProduct", "Home", routeValues: new { id = pro.ProductID })"><i class="fa fa-trash-o"></i> Delete</a>
+        }
+        else
+        {
+            <a class="btn btn-primary" ng-click="edit(@objX)" href="#edit"><i class="fa fa-edit"></i> Edit</a>
+            <a class="btn btn-primary" href="@Url.Action("DeleteProduct", "Home", routeValues: new { id = pro.ProductID })"><i class="fa fa-trash-o"></i> Delete</a>
+        }
+    </div>
+</div>
+<div id="edit" class="row" style="margin-top: 30px">
+    <div class="col-lg-12">
+        <div>
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card mb-3">
+                        <h2 class="card-header">Edit Product Information</h2>
+                    </div>
+                    <div class="card-body">
+                        @using (Html.BeginForm("UpdateProduct", "Home", FormMethod.Post))
+                        {
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    @Html.LabelFor(p => p.ProductID)
+                                    @Html.TextBoxFor(p => p.ProductID, htmlAttributes: new { @class = "form-control", @ng_model = "x.ProductID", @readonly = "readonly" })
+                                    @Html.LabelFor(p => p.ProductName)
+                                    @Html.TextBoxFor(p => p.ProductName, htmlAttributes: new { @class = "form-control", @ng_model = "x.ProductName" })
+                                    @Html.LabelFor(p => p.Brand)
+                                    @Html.DropDownListFor(p => p.Brand, new SelectList(ViewBag.Brand, "BrandName", "BrandName"), htmlAttributes: new { @class = "form-control", @ng_model = "x.Brand" })
+                                    @Html.LabelFor(p => p.ProductCate)
+                                    @Html.DropDownListFor(p => p.ProductCate, new SelectList(ViewBag.Cate, "CategoriesName", "CategoriesName"), htmlAttributes: new { @class = "form-control", @ng_model = "x.ProductCate" })
+                                    @Html.LabelFor(p => p.Model)
+                                    @Html.TextBoxFor(p => p.Model, htmlAttributes: new { @class = "form-control", @ng_model = "x.Model" })
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    @Html.LabelFor(p => p.Description)
+                                    @Html.TextAreaFor(p => p.Description, htmlAttributes: new { @class = "form-control", @ng_model = "x.Description" })
+                                    @Html.LabelFor(p => p.Detail)
+                                    @Html.TextAreaFor(p => p.Detail, htmlAttributes: new { @class = "form-control", @ng_model = "x.Detail" })
+                                    @Html.LabelFor(p => p.UnitInStock)
+                                    @Html.TextBoxFor(p => p.UnitInStock, htmlAttributes: new { @class = "form-control", @ng_model = "x.UnitInStock", @type = "number" })
+                                    @Html.LabelFor(p => p.UnitPrice)
+                                    @Html.TextBoxFor(p => p.UnitPrice, htmlAttributes: new { @class = "form-control", @ng_model = "x.UnitPrice" })
+                                </div>
+                                <div class="form-group col-lg-5">
+                                    <a href="#page-top" ng-click="cancel()" style="margin-right: 20px">Cancel</a>
+                                </div>
+                                <div class="form-group col-lg-7">
+                                    <input type="submit" class="btn btn-primary" style="margin-left:20px" name="UpdateProduct" value="Update" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Script{
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($scope) {
+            $scope.x = new Object();
+            $scope.edit = function (obj) {
+                $scope.x = obj;
+                $("#edit").show();
+            };
+            $scope.cancel = function () {
+                $("#edit").hide();
+            };
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#edit").hide();
+            // Add smooth scrolling to all links
+            $("a").on('click', function (event) {
+
+                // Make sure this.hash has a value before overriding default behavior
+                if (this.hash !== "") {
+                    // Prevent default anchor click behavior
+                    event.preventDefault();
+
+                    // Store hash
+                    var hash = this.hash;
+
+                    // Using jQuery's animate() method to add smooth page scroll
+                    // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+                    $('html, body').animate({
+                        scrollTop: $(hash).offset().top
+                    }, 1500, function () {
+
+                        // Add hash (#) to URL when done scrolling (default click behavior)
+                        window.location.hash = hash;
+                    });
+                } // End if
+            });
+        });
+    </script>
+
+}
+
+
+
+

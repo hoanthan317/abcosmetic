@@ -1,0 +1,161 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Models
+@using ABCosmeticWAD.Common
+@model StaffModel
+@using System.Web.Script.Serialization
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var st = ViewBag.Staff;
+    List<OrderPrice> order = ViewBag.Order;
+    var objX = new JavaScriptSerializer().Serialize(st);
+    Staff userSession = (Staff)Session[CommonConstants.USER_SESSION];
+}
+
+@section section{
+    Profile
+}
+<div class="row">
+    <div class="col-lg-3">
+        <img src="~/Assets/Admin/images/no_image.jpg" />
+    </div>
+    <div class="col-lg-9">
+        <p class="text-capitalize">Staff ID: <span class="text-info">@st.StaffID</span></p>
+        <p class="text-capitalize">Staff Name: <span class="text-info">@st.StaffName</span></p>
+        <p class="text-capitalize">Gender: <span class="text-info">@st.Gender</span></p>
+        <p class="text-capitalize">Email: <span class="text-info">@st.Email</span></p>
+        <p class="text-capitalize">Phone number: <span class="text-info">@st.PhoneNumber</span></p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <p class="text-capitalize">Address: <span class="text-info">@st.Address</span></p>
+        <p class="text-capitalize">Date of birth: <span class="text-info">@st.DateOfBirth</span></p>
+        <p class="text-capitalize">Position: <span class="text-info">@st.GroupName</span></p>
+        <p class="text-capitalize">Working at store: <span class="text-info">@st.StoreName</span></p>
+    </div>
+    <div class="col-lg-4">
+        <a class="btn btn-primary" ng-click="edit(@objX)" href="#edit"><i class="fa fa-edit"></i> Edit</a>
+        <a class="btn btn-primary disabled" href="@Url.Action("DeleteStaff", "Home", routeValues: new { id = st.StaffID })"><i class="fa fa-trash-o"></i> Delete</a>
+    </div>
+</div>
+<div id="edit" class="row" style="margin-top: 30px">
+    <div class="col-lg-12">
+        <div>
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card mb-3">
+                        <h2 class="card-header">Edit Profile</h2>
+                    </div>
+                    <div class="card-body">
+                        @using (Html.BeginForm("UpdateManager", "Home", FormMethod.Post))
+                        {
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label>Staff ID</label>
+                                    @Html.TextBoxFor(m => m.StaffID, htmlAttributes: new { @class = "form-control", @ng_model = "x.StaffID", @readonly = "readonly" })
+                                    <label>Staff Name</label>
+                                    @Html.TextBoxFor(m => m.StaffName, htmlAttributes: new { @class = "form-control", @ng_model = "x.StaffName" })
+                                    <label>Gender</label>
+                                    @Html.DropDownListFor(m => m.Gender, new SelectList(ViewBag.Gender), htmlAttributes: new { @class = "form-control", @ng_model = "x.Gender" })
+                                    <label>Email</label>
+                                    @Html.TextBoxFor(m => m.Email, htmlAttributes: new { @class = "form-control", @ng_model = "x.Email", @type = "email" })
+                                    <label>Phone number</label>
+                                    @Html.TextBoxFor(m => m.PhoneNumber, htmlAttributes: new { @class = "form-control", @ng_model = "x.Model" })
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>Address</label>
+                                    @Html.TextBoxFor(m => m.Address, htmlAttributes: new { @class = "form-control", @ng_model = "x.Address" })
+                                    <label>Date of birth</label>
+                                    @Html.TextBoxFor(m => m.DateOfBirth, htmlAttributes: new { @class = "form-control", @ng_model = "x.DateOfBirth", @type = "date", @required = "required" })
+                                    <label>Position</label>
+                                    @Html.DropDownListFor(m => m.GroupName, new SelectList(ViewBag.Group, "GroupName", "GroupName"), htmlAttributes: new { @class = "form-control", @ng_model = "x.GroupName" })
+                                    <label>Working at store</label>
+                                    @Html.DropDownListFor(m => m.StoreName, new SelectList(ViewBag.Store, "StoreName", "StoreName"), htmlAttributes: new { @class = "form-control", @ng_model = "x.StoreName" })
+                                </div>
+                                <div class="form-group col-lg-5">
+                                    <a href="#page-top" ng-click="cancel()" style="margin-right: 20px">Cancel</a>
+                                </div>
+                                <div class="form-group col-lg-7">
+                                    <input type="submit" class="btn btn-primary" style="margin-left:20px" name="UpdateProduct" value="Update" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="card">
+    <div class="card-header text-center">
+        <h5>Salary</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered" id="dataTable" style="width:100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer name</th>
+                    <th>Total price</th>
+                    <th>Bonus</th>
+                    <th>Created date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (OrderPrice ord in order)
+                {
+                    <tr>
+                        <td><a href="@Url.Action("OrderDetail", "Home", routeValues: new { id = ord.OrderID })">@ord.OrderID</a></td>
+                        <td>@ord.CustomerName</td>
+                        <td>@ord.TotalPrice</td>
+                        <td>@(ord.TotalPrice * 0.02)</td>
+                        <td>@ord.CreatedDate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Script{
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($scope) {
+            $scope.x = new Object();
+            $scope.edit = function (obj) {
+                $scope.x = obj;
+                $("#edit").show();
+            };
+            $scope.cancel = function () {
+                $("#edit").hide();
+            };
+        });
+    </script>
+    <script>
+        $("#edit").hide();
+        // Add smooth scrolling to all links
+        $("a").on('click', function (event) {
+
+            // Make sure this.hash has a value before overriding default behavior
+            if (this.hash !== "") {
+                // Prevent default anchor click behavior
+                event.preventDefault();
+
+                // Store hash
+                var hash = this.hash;
+
+                // Using jQuery's animate() method to add smooth page scroll
+                // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+                $('html, body').animate({
+                    scrollTop: $(hash).offset().top
+                }, 1500, function () {
+
+                    // Add hash (#) to URL when done scrolling (default click behavior)
+                    window.location.hash = hash;
+                });
+            } // End if
+        });
+        });
+    </script>
+}
+

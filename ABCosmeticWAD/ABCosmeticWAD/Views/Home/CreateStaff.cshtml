@@ -1,0 +1,60 @@
+﻿@using ABCosmeticWAD.Models;
+@model Staff
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section section{
+    New Manager
+}
+
+<div id="createForm" class="row" style="margin-top: 30px">
+    <div class="col-lg-12">
+        <div>
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card mb-3">
+                        <h2 class="card-header">New Staff</h2>
+                    </div>
+                    <div class="card-body">
+                        @using (Html.BeginForm("CreateStaff", "Home", FormMethod.Post))
+                        {
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label>Staff Name</label>
+                                    @Html.TextBoxFor(m => m.StaffName, htmlAttributes: new { @class = "form-control" })
+                                    <label>Password</label>
+                                    @Html.TextBoxFor(m => m.Password, htmlAttributes: new { @class = "form-control", @type = "password", @required = "true" })
+                                    <label>Gender</label>
+                                    @Html.DropDownListFor(m => m.Gender, new SelectList(ViewBag.Gender), htmlAttributes: new { @class = "form-control" })
+                                    <label>Email</label>
+                                    @Html.TextBoxFor(m => m.Email, htmlAttributes: new { @class = "form-control", @type = "email" })
+                                    <label>Phone number</label>
+                                    @Html.TextBoxFor(m => m.PhoneNumber, htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>Address</label>
+                                    @Html.TextBoxFor(m => m.Address, htmlAttributes: new { @class = "form-control" })
+                                    <label>Date of birth</label>
+                                    @Html.TextBoxFor(m => m.DateOfBirth, htmlAttributes: new { @class = "form-control", @type = "date" })
+                                    <label>Position</label>
+                                    @Html.DropDownListFor(m => m.GroupID, new SelectList(ViewBag.Group, "GroupID", "GroupName"), htmlAttributes: new { @class = "form-control" })
+                                    <label>Working at store</label>
+                                    @Html.DropDownListFor(m => m.StoreID, new SelectList(ViewBag.Store, "StoreID", "StoreName"), htmlAttributes: new { @class = "form-control" })
+                                    <label>Base salary</label>
+                                    @Html.TextBoxFor(m => m.BaseSalary, htmlAttributes: new { @class = "form-control" })
+                                </div>
+                                <div class="form-group col-lg-5">
+                                    <a href="@Url.Action("SaleStaff", "Home")" style="margin-right: 20px">Cancel</a>
+                                </div>
+                                <div class="form-group col-lg-7">
+                                    <input type="submit" class="btn btn-primary" style="margin-left:20px" name="CreateProduct" value="Create" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Models
+@model ProductModel
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    List<ProductModel> list = ViewBag.List;
+}
+
+@section section{
+    Products
+}
+@if (TempData["error"] != null)
+{
+    <p class="text-center text-danger">@TempData["error"]</p>
+}
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fa fa-table"></i> Product List
+        <a href="@Url.Action("CreateProduct", "Home")" class="btn btn-primary float-right">New product</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Model</th>
+                        <th>Price</th>
+                        <th>In stock</th>
+                        <th>Last modified date</th>
+                        <th>Detail</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ProductModel pro in list)
+                    {
+                        <tr>
+                            <td>@pro.ProductID</td>
+                            <td>@pro.ProductName</td>
+                            <td>@pro.Brand</td>
+                            <td>@pro.ProductCate</td>
+                            <td>@pro.Model</td>
+                            <td>$@pro.UnitPrice</td>
+                            <td>@pro.UnitInStock</td>
+                            <td>@pro.ModifiedDate</td>
+                            <td class="text-center">
+                                <a href="@Url.Action("ProductDetail", "Home", routeValues: new { id = pro.ProductID })">
+                                    <i class="fa fa-sticky-note-o"></i>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="@Url.Action("DeleteProduct", "Home", routeValues: new { id = pro.ProductID })">
+                                    <i class="fa fa-trash-o"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Script{
+    <script>
+        $(document).ready(function () {
+            $("#edit").hide();
+            // Add smooth scrolling to all links
+            $("a").on('click', function (event) {
+
+                // Make sure this.hash has a value before overriding default behavior
+                if (this.hash !== "") {
+                    // Prevent default anchor click behavior
+                    event.preventDefault();
+
+                    // Store hash
+                    var hash = this.hash;
+
+                    // Using jQuery's animate() method to add smooth page scroll
+                    // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+                    $('html, body').animate({
+                        scrollTop: $(hash).offset().top
+                    }, 1500, function () {
+
+                        // Add hash (#) to URL when done scrolling (default click behavior)
+                        window.location.hash = hash;
+                    });
+                } // End if
+            });
+        });
+    </script>
+}
+

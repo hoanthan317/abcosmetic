@@ -1,0 +1,196 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Models
+@using ABCosmeticWAD.Common
+@model OrderModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Staff userSession = (Staff)Session[CommonConstants.USER_SESSION];
+    var id = TempData["id"];
+}
+
+@section section{
+    Order detail
+}
+<div class="row" style="margin-bottom: 1rem">
+    <div class="col-lg-12 col-md-12">
+        @if (userSession.GroupID == "MANAGER" || userSession.GroupID == "ADMIN")
+        {
+            <a href="#edit" id="editbtn" onclick="edit()" class="btn btn-outline-info">Edit</a>
+        }
+        <a href="#" id="printbtn" ng-click="print()" class="btn btn-outline-info">Print</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 col-lg-6">
+        <div class="card mb-3">
+            <h6 class="card-header">Order information</h6>
+            <div class="card-body">
+                <p>Order ID: <span class="text-info">{{order.OrderID}}</span></p>
+                <p id="name">Customer name: <span class="text-info">{{order.CustomerName}}</span></p>
+                <p id="phone">Phone number: <span class="text-info">{{order.ContactPhone}}</span></p>
+                <p id="staff">Staff name: <span class="text-info">{{order.StaffName}}</span></p>
+                <p id="store">Store: <span class="text-info">{{order.Store}}</span></p>
+                <p>Created date: <span class="text-info">{{order.CreatedDate}}</span></p>
+                <p>Payment method: <span class="text-info">{{order.PaymentMethodID}}</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-6">
+        <div class="card mb-3">
+            <h6 class="card-header">Shipping information</h6>
+            <div class="card-body">
+                <p id="address">Shipping address: <span class="text-info">{{order.ShippingAddress}}</span></p>
+                <p id="delidate">Delivered date: <span class="text-info">{{order.ShipDate}}</span></p>
+                <p>Note:<span></span></p>
+                <textarea class="form-control" rows="5" readonly style="width:100%">{{order.Note}}</textarea>
+                <p>Last modified date: <span class="text-info">{{order.ModifiedDate}}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fa fa-table"></i> Product list
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" style="width:100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in product">
+                        <td>{{x.ProductID}}</td>
+                        <td>{{x.ProductName}}</td>
+                        <td>${{x.UnitPrice}}</td>
+                        <td>{{x.Quantity}}</td>
+                        <td>${{x.Quantity * x.UnitPrice}}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-center" colspan="5">
+                            Total: <strong>${{getTotal()}}</strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="edit" class="row" style="margin-top: 30px">
+    <div class="col-lg-12">
+        <div>
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card mb-3">
+                        <h6 class="card-header"><i class="fa fa-edit"></i> Edit Order Information</h6>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label>Customer name</label>
+                                    <input class="form-control" ng-model="order.CustomerName" />
+                                    <label>Phone number</label>
+                                    <input id="txtPhone" ng-change="checkNumber()" class="form-control" ng-model="order.ContactPhone" />
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label>Shipping Address</label>
+                                    <input class="form-control" ng-model="order.ShippingAddress" />
+                                    <label>Note</label>
+                                    <textarea class="form-control" ng-model="order.Note"></textarea>
+                                </div>
+                                <div class="form-group col-lg-5">
+                                    <a href="#page-top" onclick="cancel()" style="margin-right: 20px">Cancel</a>
+                                </div>
+                                <div class="form-group col-lg-7">
+                                    <a href="#" class="btn btn-primary" ng-click="updateClick()" style="margin-left:20px">Update</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($http, $scope) {
+            $scope.print = function () {
+                    window.location.href = "/Home/PrintOrderDetail/" + @id;
+                }
+            $scope.checkNumber = function () {
+                var key = $("#txtPhone").val();
+
+                for (var i = 0; i < key.length; i++) {
+                    if (!(/^\d+$/.test(key[i]))) {
+                        $scope.order.ContactPhone = key.substring(0, i);
+                    }
+                };
+            };
+            $http.get("/api/Order/" + @id).then(function (response) {
+                $scope.order = response.data;
+            });
+            $http.get("/api/OrderDetail/" + @id).then(function (response) {
+                $scope.product = response.data;
+            });
+
+            $scope.getTotal = function () {
+                var total = 0;
+                for (var i = 0; i < $scope.product.length; i++) {
+                    var product = $scope.product[i];
+                    total += (product.UnitPrice * product.Quantity);
+                };
+                return total;
+            }
+
+            $scope.updateClick = function () {
+                $scope.update($scope.order);
+                $("#edit").hide();
+            }
+
+            $scope.update = function (order) {
+                $http.put("/api/Order/" + @id, order).then(function (response) {
+                    if (response.data == false) {
+                        $http.get("/api/Order/" + @id).then(function (response) {
+                            $scope.order = response.data;
+                        });
+                        alert("Error on update process");
+                    }
+                });
+            };
+        });
+        $(document).ready(function () {
+            $("#edit").hide();
+        });
+
+        function edit() {
+            $("#edit").show();
+        };
+
+        function cancel() {
+            $("#edit").hide();
+        };
+    </script>
+}
+<style>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+

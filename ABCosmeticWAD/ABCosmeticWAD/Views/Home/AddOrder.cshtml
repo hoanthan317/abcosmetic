@@ -1,0 +1,250 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Common
+@using ABCosmeticWAD.Models;
+@model Order
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    Staff session = (Staff)Session[CommonConstants.USER_SESSION];
+}
+
+@section section {
+    New Order
+}
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fa fa-table"></i> Product List
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <div class="row">
+                <div class="col-sm-12 col-md-6">
+                    <form ng-submit="addItem()" method="post">
+                        <label class="col-md-4">
+                            Product ID:
+                            <input class="form-control form-control-sm" required name="productID" ng-model="id" placeholder="Enter Product ID / Scan Barcode" type="number" autofocus>
+                        </label>
+                    </form>
+                </div>
+            </div>
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Sub-Total</th>
+                        <th class="text-center">#</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in cart">
+                        <td>{{x.ProductID}}</td>
+                        <td><a href="#">{{x.ProductName}}</a></td>
+                        <td>{{x.UnitPrice}}</td>
+                        <td class="text-center">
+                            <form>
+                                <input id="{{x.ProductID}}" type="number" required min="1" ng-change="checkQuant(x)" ng-model="x.Quantity" value="{{x.Quantity}}" class="form-control col-md-2" />
+                            </form>
+                        </td>
+                        <td>${{getSubTotal(x)}}</td>
+                        <td class="text-center">
+                            <a href="#" ng-click="deleteItem(x)">
+                                <i class="fa fa-trash-o"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            Total: <strong>${{getTotal()}}</strong>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card mb-3">
+    <h6 class="card-header">Order information</h6>
+    <div class="card-body">
+        <form>
+            <div class="row">
+                <div class="form-group col-lg-6">
+                    <input type="hidden" ng-model="order.StaffID" ng-bind="@session.StaffID" value="@session.StaffID" />
+                    <input type="hidden" ng-model="order.StoreName" ng-bind="@session.Store.StoreName" value="@session.Store.StoreName" />
+                    <label>Customer name:</label>
+                    <input required ng-model="order.CustomerName" placeholder="Enter Customer name" class="form-control" />
+                    <label>Shipping Address:</label>
+                    <input ng-model="order.ShippingAddress" placeholder="Enter shipping address" class="form-control" />
+                    <label>PaymentMethod</label>
+                    <select class="form-control" ng-model="order.PaymentMethodID">
+                        <option ng-repeat="x in payment">{{x.PaymentMethodID}}</option>
+                    </select>
+                    @*<input ng-model="order.PaymentMethodID" placeholder="Enter Customer name" class="form-control" />*@
+                    @*@Html.DropDownListFor(m => m.PaymentMethodID, new SelectList(ViewBag.Payment, "PaymentMethodID", "PaymentMethodID"), htmlAttributes: new { @class = "form-control" })*@
+                </div>
+                <div class="form-group col-lg-6">
+                    <label>Customer phone number:</label>
+                    <input ng-model="order.ContactPhone" type="number" placeholder="Enter Customer phone number" class="form-control" />
+                    <label>Note</label>
+                    <textarea ng-model="order.Note" placeholder="Note" class="form-control" rows="4"></textarea>
+                </div>
+            </div>
+            <a href="#page-top" ng-click="cancel()">Cancel</a>
+            <a href="#page-top" class="btn btn-primary float-right" ng-click="create()">Create</a>
+        </form>
+    </div>
+</div>
+@section Script{
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($http, $scope) {
+            $http.get("/api/PaymentMethod").then(function (response) {
+                $scope.payment = response.data;
+            });
+            $scope.cart = [];
+            $scope.getSubTotal = function (x) {
+                var total = 0;
+                if (x.Quantity != null) {
+                    total = (x.UnitPrice * x.Quantity);
+                }
+                return total;
+            };
+            $scope.create = function () {
+                var status = true;
+                if ($scope.cart.length == 0) {
+                    alert("No product chosen!");
+                    status = false;
+                }
+                for (var i = 0; i < $scope.cart.length; i++) {
+                    if ($scope.cart[i].Quantity == null) {
+                        alert("Enter quantity!!");
+                        status = false;
+                        break;
+                    }
+                }
+                if ($scope.order == null) {
+                    alert("Enter order information!");
+                    status = false;
+                }
+                if ($scope.order.PaymentMethodID == null) {
+                    alert("Select payment method!");
+                    status = false;
+                }
+                if (status == true) {
+                    $http.post("/api/Order/" + @session.StaffID, $scope.order).then(function (response) {
+                        var id = response.data;
+                        if (response.data == false) {
+                            alert("Server error!");
+                        }
+                        else {
+                            $scope.order = null;
+                            addProduct(id);
+                        }
+                    });
+                }
+            }
+            function addProduct(id) {
+                $http.post("/api/OrderDetail/" + id, $scope.cart).then(function (response) {
+                    if (response.data == false) {
+                        alert("Server error!");
+                    }
+                    else {
+                        $scope.cart = [];
+                    }
+                });
+            };
+            $scope.cancel = function () {
+                $scope.cart = [];
+                $scope.order = null;
+            };
+            $scope.getTotal = function () {
+                var total = 0;
+                for (var i = 0; i < $scope.cart.length; i++) {
+                    if ($scope.cart[i].Quantity != null) {
+                        total += ($scope.cart[i].Quantity * $scope.cart[i].UnitPrice);
+                    }
+                    else {
+                        continue;
+                    }
+                };
+                return total;
+            };
+            $scope.deleteItem = function (x) {
+                var index = $scope.cart.indexOf(x);
+                if (index > -1) {
+                    $scope.total -= (x.Quantity * x.UnitPrice);
+                    $scope.cart.splice(index, 1);
+                }
+            };
+            $scope.checkQuant = function (x) {
+                var quant = $("#" + x.ProductID).val();
+                if (quant > x.UnitInStock) {
+                    alert("The input quantity is out of bounds!");
+                    $("#" + x.ProductID).val(x.UnitInStock);
+                };
+            };
+            $scope.addItem = function () {
+                $http.get("/api/Product/" + $scope.id).then(function (response) {
+                    if (response.data == null) {
+                        alert("Cannot find product");
+                    }
+                    else {
+                        var data = response.data;
+                        if (!contains(data)) {
+                            if (data.UnitInStock > 0) {
+                                var item = { ProductID: data.ProductID, ProductName: data.ProductName, UnitPrice: data.UnitPrice, Quantity: 1, UnitInStock: data.UnitInStock };
+                                $scope.total += (item.UnitPrice * item.Quantity);
+                                $scope.cart.push(item);
+                            }
+                            else {
+                                alert("Product is out of stock!");
+                            }
+                        };
+                        $scope.id = null;
+                    }
+                });
+                function contains(data) {
+                    for (var i = 0; i < $scope.cart.length; i++) {
+                        if ($scope.cart[i].ProductID == data.ProductID) {
+                            if ($scope.cart[i].Quantity < data.UnitInStock) {
+                                $scope.cart[i].Quantity += 1;
+                                $scope.total += ($scope.cart[i].UnitPrice);
+                            }
+                            else {
+                                alert("Product is out of stock!");
+                            }
+                            return true;
+                        }
+                        else {
+                            continue;
+                        }
+                    };
+                }
+            };
+        });
+        function editQuantity(id) {
+            $("#" + id).attr("readonly", false);
+            $("#editbtn" + id).replaceWith("<a id='cancelbtn' href='@Url.Action("AddOrder", "Home")' onclick='cancel()'>Cancel</a>");
+        };
+        function cancel() {
+            $("#cancelbtn").replaceWith("<a id='editbtn' href='#' onclick='editQuantity()'><i class='fa fa-edit'></i></a>");
+            $("#quantity").attr("readonly", true);
+        };
+    </script>
+}
+
+<style>
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>

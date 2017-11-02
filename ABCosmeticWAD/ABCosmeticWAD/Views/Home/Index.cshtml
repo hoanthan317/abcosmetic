@@ -1,0 +1,513 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@section section{
+    Dashboard
+}
+@section Script{
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($http, $scope) {
+            var time = null;
+            var salary = null;
+            var today = new Date();
+            var report = null;
+            $http.get("/api/Salary").then(function (response) {
+                time = "(Year: " + today.getFullYear() + ")";
+                $scope.salary = response.data;
+                salary = $scope.salary;
+            });
+            $scope.getBonus = function (x) {
+                var index = $scope.salary.indexOf(x);
+                if ($scope.salary[index].Bonus == null) {
+                    return 0;
+                }
+                else {
+                    return $scope.salary[index].Bonus;
+                }
+            }
+            $scope.getTotal = function (x) {
+                var index = $scope.salary.indexOf(x);
+                if ($scope.salary[index].Bonus == null) {
+                    return $scope.salary[index].BaseSalary;
+                }
+                else {
+                    return ($scope.salary[index].Bonus + $scope.salary[index].BaseSalary);
+                }
+            }
+            $(document).ready(function () {
+                $("#month").hide();
+                $("#week").hide();
+                $("#date").hide();
+                $("#year").hide();
+            });
+            $http.get("/api/Store").then(function (response) {
+                $scope.storeList = response.data;
+            });
+            $scope.monthForm = function () {
+                $("#month").show();
+                $("#week").hide();
+                $("#date").hide();
+                $("#year").hide();
+            };
+
+            $scope.weekForm = function () {
+                $("#week").show();
+                $("#month").hide();
+                $("#date").hide();
+                $("#year").hide();
+            }
+
+            $scope.dateForm = function () {
+                $("#month").hide();
+                $("#week").hide();
+                $("#date").show();
+                $("#year").hide();
+            }
+
+            $scope.yearForm = function () {
+                $("#month").hide();
+                $("#week").hide();
+                $("#date").hide();
+                $("#year").show();
+            }
+
+            $scope.fromDate = function () {
+                var fromDate = new Date($("#from").val());
+                var newDate = new Date(fromDate);
+                newDate.setDate(newDate.getDate() + 6);
+                var toDate = new Date(newDate);
+                var day = ("0" + toDate.getDate()).slice(-2);
+                var month = ("0" + (toDate.getMonth() + 1)).slice(-2);
+                var to = toDate.getFullYear() + "-" + (month) + "-" + (day);
+                var from = fromDate.getFullYear() + "-" + (("0" + (fromDate.getMonth() + 1)).slice(-2)) + "-" + (("0" + fromDate.getDate()).slice(-2));
+                $("#from").val(from);
+                $("#to").val(to);
+            }
+
+            $scope.toDate = function () {
+                var toDate = new Date($("#to").val());
+                var newDate = new Date(toDate);
+                newDate.setDate(newDate.getDate() - 6);
+                var fromDate = new Date(newDate);
+                var day = ("0" + fromDate.getDate()).slice(-2);
+                var month = ("0" + (fromDate.getMonth() + 1)).slice(-2);
+                var from = fromDate.getFullYear() + "-" + (month) + "-" + (day);
+                var to = toDate.getFullYear() + "-" + (("0" + (toDate.getMonth() + 1)).slice(-2)) + "-" + (("0" + toDate.getDate()).slice(-2));
+                $("#from").val(from);
+                $("#to").val(to);
+            }
+            $scope.hide = function () {
+                $("#month").hide();
+                $("#week").hide();
+                $("#date").hide();
+                $("#year").hide();
+            }
+            $scope.yearList = [];
+            for (var i = 2000; i <= today.getFullYear(); i++) {
+                $scope.yearList.push(i);
+            };
+            $scope.selectYear = function () {
+                $scope.time = "(Year: " + $scope.year + ")";
+                time = "(Year: " + $scope.year + ")";
+                var store = $("#store").val();
+                if (store == "? undefined:undefined ?") {
+                    store = null;
+                };
+                $http.get("/api/Salary?year=" + $scope.year).then(function (response) {
+                    $scope.salary = response.data;
+                    salary = $scope.salary;
+                });
+                $http.get("/api/Report?year=" + $scope.year + "&store=" + store).then(function (response) {
+                    if (response.data != null) {
+                        $scope.dps = [];
+                        var storeName;
+                        if (store != "? undefined:undefined ?" && store != null) {
+                            storeName = " - " + store;
+                        }
+                        else {
+                            storeName = " ";
+                        }
+                        for (var i = 0; i < response.data.length; i++) {
+                            $scope.dps.push({ x: response.data[i].Time, y: parseFloat(response.data[i].SalesFigure) });
+                        };
+                        $scope.chart = new CanvasJS.Chart("chartContainer",
+                            {
+                                animationEnabled: true,
+                                axisX: {
+                                    title: "Month",
+                                    interval: 1,
+                                    intervalType: "month",
+                                },
+                                axisY: {
+                                    title: "Revenue"
+                                },
+                                title: {
+                                    text: "Monthly Revenue : " + $scope.year + storeName
+                                },
+                                data: [{
+                                    type: "area",
+                                    dataPoints: $scope.dps,
+                                }]
+                            });
+
+                        $scope.chart.render();
+                    }
+                    else {
+                        alert("Server error!");
+                    }
+                });
+            };
+            $scope.selectMonth = function () {
+                var store = $("#store").val();
+                if (store == "? undefined:undefined ?") {
+                    store = null;
+                };
+                var month = $scope.month.getFullYear() + "/" + ($scope.month.getMonth() + 1);
+                $scope.time = "(Month: " + month + ")";
+                time = "(Month: " + month + ")";
+                $http.get("/api/Salary?month=" + month).then(function (response) {
+                    $scope.salary = response.data;
+                    salary = $scope.salary;
+                });
+                $http.get("/api/Report?month=" + month + "&store=" + store).then(function (response) {
+                    if (response.data != null) {
+                        var storeName;
+                        if (store != "? undefined:undefined ?" && store != null) {
+                            storeName = " - " + store;
+                        }
+                        else {
+                            storeName = " ";
+                        }
+                        $scope.dps = [];
+                        for (var i = 0; i < response.data.length; i++) {
+                            $scope.dps.push({ x: response.data[i].Time, y: parseFloat(response.data[i].SalesFigure) });
+                        };
+                        $scope.chart = new CanvasJS.Chart("chartContainer",
+                            {
+                                animationEnabled: true,
+                                axisX: {
+                                    title: "Date",
+                                    interval: 1,
+                                    intervalType: "month",
+                                },
+                                axisY: {
+                                    title: "Revenue"
+                                },
+                                title: {
+                                    text: "Daily Revenue : " + month + storeName
+                                },
+                                data: [{
+                                    type: "area",
+                                    dataPoints: $scope.dps,
+                                }]
+                            });
+
+                        $scope.chart.render();
+                    }
+                    else {
+                        alert("Server error!");
+                    }
+                });
+            };
+            $scope.selectDate = function () {
+                var store = $("#store").val();
+                if (store == "? undefined:undefined ?") {
+                    store = null;
+                };
+                var storeName;
+                if (store != "? undefined:undefined ?" && store != null) {
+                    storeName = " - " + store;
+                }
+                else {
+                    storeName = " ";
+                }
+                var status = true;
+                var from = $("#fromDate").val();
+                var to = $("#toDate").val();
+                if (from > to) {
+                    alert("Invalid dates selected!");
+                    status = false;
+                }
+                if (from == "" || to == "") {
+                    alert("Select dates!");
+                    status = false;
+                }
+                if (status == true) {
+                    $http.get("/api/Salary?from=" + from + "&to=" + to).then(function (response) {
+                        $scope.salary = response.data;
+                        $scope.time = "(From: " + from + " To: " + to + ")";
+                        time = "(From: " + from + " To: " + to + ")";
+                        salary = $scope.salary;
+                    });
+                    $http.get("/api/Report?from=" + from + "&to=" + to + "&store=" + store).then(function (response) {
+                        if (response.data != null) {
+                            $scope.dps = [];
+                            for (var i = 0; i < response.data.length; i++) {
+                                var date = new Date(response.data[i].Date);
+                                $scope.dps.push({ x: date, y: parseFloat(response.data[i].SalesFigure) });
+                            };
+                            $scope.chart = new CanvasJS.Chart("chartContainer",
+                                {
+                                    animationEnabled: true,
+                                    axisX: {
+                                        title: "Date",
+                                        interval: 1,
+                                        intervalType: "month",
+                                    },
+                                    axisY: {
+                                        title: "Revenue"
+                                    },
+                                    title: {
+                                        text: "Daily Revenue : From " + from + " To " + to + storeName
+                                    },
+                                    data: [{
+                                        type: "area",
+                                        dataPoints: $scope.dps,
+                                    }]
+                                });
+
+                            $scope.chart.render();
+                        }
+                        else {
+                            alert("Server error!");
+                        }
+                    });
+                }
+            }
+            $scope.selectWeek = function () {
+                var store = $("#store").val();
+                if (store == "? undefined:undefined ?") {
+                    store = null;
+                };
+                var storeName;
+                if (store != "? undefined:undefined ?" && store != null) {
+                    storeName = " - " + store;
+                }
+                else {
+                    storeName = " ";
+                }
+                var from = $("#from").val();
+                var to = $("#to").val();
+                $http.get("/api/Salary?from=" + from + "&to=" + to).then(function (response) {
+                    $scope.time = "(From: " + from + " To: " + to + ")";
+                    time = "(From: " + from + " To: " + to + ")";
+                    $scope.salary = response.data;
+                    salary = $scope.salary;
+                });
+                $http.get("/api/Report?from=" + from + "&to=" + to + "&store=" + store).then(function (response) {
+                    if (response.data != null) {
+                        $scope.dps = [];
+                        for (var i = 0; i < response.data.length; i++) {
+                            var date = new Date(response.data[i].Date);
+                            $scope.dps.push({ x: date, y: parseFloat(response.data[i].SalesFigure) });
+                        };
+                        $scope.chart = new CanvasJS.Chart("chartContainer",
+                            {
+                                animationEnabled: true,
+                                axisX: {
+                                    title: "Date",
+                                    interval: 1,
+                                    intervalType: "month",
+                                },
+                                axisY: {
+                                    title: "Revenue"
+                                },
+                                title: {
+                                    text: "Daily Revenue : From " + from + " To " + to + storeName
+                                },
+                                data: [{
+                                    type: "area",
+                                    dataPoints: $scope.dps,
+                                }]
+                            });
+
+                        $scope.chart.render();
+                    }
+                    else {
+                        alert("Server error!");
+                    }
+                });
+            };
+            $scope.selectStore = function () {
+                $("#month").hide();
+                $("#week").hide();
+                $("#date").hide();
+                $("#year").hide();
+                $http.get("/api/Salary").then(function (response) {
+                    $scope.salary = response.data;
+                    salary = $scope.salary;
+                });
+                $http.get("/api/Report?year=" + today.getFullYear() + "&store=" + $("#store").val()).then(function (response) {
+                    $scope.dps = [];
+                    for (var i = 0; i < response.data.length; i++) {
+                        $scope.dps.push({ x: response.data[i].Time, y: parseFloat(response.data[i].SalesFigure) });
+                    };
+                    $scope.chart = new CanvasJS.Chart("chartContainer",
+                        {
+                            animationEnabled: true,
+                            axisX: {
+                                title: "Month",
+                                interval: 1,
+                                intervalType: "month",
+                            },
+                            axisY: {
+                                title: "Revenue"
+                            },
+                            title: {
+                                text: "Monthly Revenue : " + today.getFullYear() + " - " + $("#store").val()
+                            },
+                            data: [{
+                                type: "area",
+                                dataPoints: $scope.dps,
+                            }]
+                        });
+
+                    $scope.chart.render();
+                });
+            }
+            $http.get("/api/Report?year=" + today.getFullYear() + "&store=" + null).then(function (response) {
+                $scope.dps = [];
+                report = response.data;
+                for (var i = 0; i < response.data.length; i++) {
+                    $scope.dps.push({ x: response.data[i].Time, y: parseFloat(response.data[i].SalesFigure) });
+                };
+                $scope.chart = new CanvasJS.Chart("chartContainer",
+                    {
+                        animationEnabled: true,
+                        axisX: {
+                            title: "Month",
+                            interval: 1,
+                            intervalType: "month",
+                        },
+                        axisY: {
+                            title: "Revenue"
+                        },
+                        title: {
+                            text: "Monthly Revenue : " + today.getFullYear()
+                        },
+                        data: [{
+                            type: "area",
+                            dataPoints: $scope.dps,
+                        }]
+                    });
+
+                $scope.chart.render();
+            });
+            $scope.print = function () {
+                window.location.href = "/Home/PrintSalaryReport?time=" + time + "&salary=" + JSON.stringify(salary);
+            }
+        });
+    </script> 
+    <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+}
+<div class="row" style="margin-bottom: 20px">
+    <div class="col-lg-12">
+        <h5>
+            View by:&nbsp;
+            <span>
+                <a href="#page-top" ng-click="yearForm()" class="btn btn-outline-info">Year</a>&nbsp;
+                <a href="#page-top" ng-click="monthForm()" class="btn btn-outline-info">Month</a>&nbsp;
+                <a href="#page-top" ng-click="weekForm()" class="btn btn-outline-info">Week</a>&nbsp;
+                <a href="#page-top" ng-click="dateForm()" class="btn btn-outline-info">Date range</a>
+                <span class="col-lg-3 float-right">
+                    Select store:&nbsp;
+                    <span>
+                        <select id="store" ng-model="store" ng-change="selectStore()" class="form-control">
+                            <option ng-repeat="x in storeList">{{x.StoreName}}</option>
+                        </select>
+                    </span>
+                </span>
+            </span>
+        </h5>
+    </div>
+    <div class="col-lg-12" id="year">
+        <form method="get" class="form-inline">
+            <div class="form-group col-sm-6">
+                <label>Year:&nbsp;</label>
+                <select ng-model="year" class="form-control">
+                    <option ng-repeat="x in yearList">{{x}}</option>
+                </select>&nbsp;
+                <a href="#page-top" ng-click="selectYear()" class="btn btn-outline-info">View</a>&nbsp;
+                <a href="#page-top" ng-click="hide()">Hide</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12" id="month">
+        <form method="get" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>Month:&nbsp;</label>
+                <input type="month" id="monthBox" ng-model="month" name="month" required class="form-control input-sm" />&nbsp;
+                <a href="#page-top" ng-click="selectMonth()" class="btn btn-outline-info">View</a>&nbsp;
+                <a href="#page-top" ng-click="hide()">Hide</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12" id="week">
+        <form method="get" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>From date:&nbsp;</label>
+                <input type="date" ng-change="fromDate()" required id="from" ng-model="from" class="form-control input-sm" />&nbsp;
+                <label>- To date:&nbsp;</label>
+                <input type="date" id="to" ng-model="to" required class="form-control input-sm" ng-change="toDate()" />&nbsp;
+                <a href="#page-top" ng-click="selectWeek()" class="btn btn-outline-info">View</a>&nbsp;
+                <a href="#page-top" ng-click="hide()">Hide</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12" id="date">
+        <form method="get" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>From date:&nbsp;</label>
+                <input type="date" id="fromDate" required class="form-control input-sm" />&nbsp;
+                <label>- To date:&nbsp;</label>
+                <input type="date" id="toDate" required class="form-control input-sm" />&nbsp;
+                <a href="#page-top" ng-click="selectDate()" class="btn btn-outline-info">View</a>&nbsp;
+                <a href="#page-top" ng-click="hide()">Hide</a>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fa fa-area-chart"></i> Revenue
+    </div>
+    <div id="chartContainer" style="height: 500px; width: 100%;">
+    </div>
+</div>
+<!-- Example DataTables Card-->
+<hr />
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fa fa-table"></i> Salary {{time}}
+        <a href="#" ng-click="print()" class="btn btn-primary float-right">Print</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Store</th>
+                        <th>Base salary</th>
+                        <th>Bonus</th>
+                        <th>Total Salary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in salary">
+                        <td>{{x.StaffID}}</td>
+                        <td>{{x.StaffName}}</td>
+                        <td>{{x.StoreName}}</td>
+                        <td>${{x.BaseSalary}}</td>
+                        <td>${{getBonus(x)}}</td>
+                        <td><strong>${{getTotal(x)}}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

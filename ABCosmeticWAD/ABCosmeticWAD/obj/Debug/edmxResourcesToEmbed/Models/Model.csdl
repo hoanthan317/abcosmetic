@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ABCosmeticModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Brand">
+    <Key>
+      <PropertyRef Name="BrandID" />
+    </Key>
+    <Property Name="BrandID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BrandName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Products" Relationship="Self.FK_Product_Brand" FromRole="Brand" ToRole="Product" />
+  </EntityType>
+  <EntityType Name="Order">
+    <Key>
+      <PropertyRef Name="OrderID" />
+    </Key>
+    <Property Name="OrderID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="StaffID" Type="Int32" />
+    <Property Name="ShippingAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="ShippingProvince" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="ShippingDisctrict" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="OrderDate" Type="DateTime" Precision="0" />
+    <Property Name="ShipDate" Type="DateTime" Precision="0" />
+    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+    <Property Name="StatusID" Type="Int32" />
+    <Property Name="CustomerName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="ContactPhone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="PaymentMethodID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="StoreName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="OrderStatu" Relationship="Self.FK_Order_OrderStatus" FromRole="Order" ToRole="OrderStatus" />
+    <NavigationProperty Name="PaymentMethod" Relationship="Self.FK_Order_PaymentMethod" FromRole="Order" ToRole="PaymentMethod" />
+    <NavigationProperty Name="Staff" Relationship="Self.FK_Order_Staff" FromRole="Order" ToRole="Staff" />
+    <NavigationProperty Name="OrderProducts" Relationship="Self.FK_OrderProduct_Order" FromRole="Order" ToRole="OrderProduct" />
+  </EntityType>
+  <EntityType Name="OrderProduct">
+    <Key>
+      <PropertyRef Name="OrderID" />
+      <PropertyRef Name="ProductID" />
+    </Key>
+    <Property Name="OrderID" Type="Int32" Nullable="false" />
+    <Property Name="ProductID" Type="Int32" Nullable="false" />
+    <Property Name="Quantity" Type="Int32" />
+    <Property Name="Price" Type="Double" />
+    <NavigationProperty Name="Order" Relationship="Self.FK_OrderProduct_Order" FromRole="OrderProduct" ToRole="Order" />
+    <NavigationProperty Name="Product" Relationship="Self.FK_OrderProduct_Product" FromRole="OrderProduct" ToRole="Product" />
+  </EntityType>
+  <EntityType Name="OrderStatu">
+    <Key>
+      <PropertyRef Name="StatusID" />
+    </Key>
+    <Property Name="StatusID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="StatusName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Orders" Relationship="Self.FK_Order_OrderStatus" FromRole="OrderStatus" ToRole="Order" />
+  </EntityType>
+  <EntityType Name="PaymentMethod">
+    <Key>
+      <PropertyRef Name="PaymentMethodID" />
+    </Key>
+    <Property Name="PaymentMethodID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="PaymentMethodName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Orders" Relationship="Self.FK_Order_PaymentMethod" FromRole="PaymentMethod" ToRole="Order" />
+  </EntityType>
+  <EntityType Name="Product">
+    <Key>
+      <PropertyRef Name="ProductID" />
+    </Key>
+    <Property Name="ProductID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProductCateID" Type="Int32" />
+    <Property Name="BrandID" Type="Int32" />
+    <Property Name="Model" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="ProductName" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Detail" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="UnitInStock" Type="Int32" />
+    <Property Name="UnitPrice" Type="Double" />
+    <Property Name="Viewed" Type="Int32" />
+    <Property Name="Rate" Type="Double" />
+    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="Brand" Relationship="Self.FK_Product_Brand" FromRole="Product" ToRole="Brand" />
+    <NavigationProperty Name="OrderProducts" Relationship="Self.FK_OrderProduct_Product" FromRole="Product" ToRole="OrderProduct" />
+    <NavigationProperty Name="ProductCategory" Relationship="Self.FK_Product_ProductCategories" FromRole="Product" ToRole="ProductCategories" />
+  </EntityType>
+  <EntityType Name="ProductCategory">
+    <Key>
+      <PropertyRef Name="ProductCateID" />
+    </Key>
+    <Property Name="ProductCateID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ProductCateParentsID" Type="Int32" />
+    <Property Name="CategoriesName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Products" Relationship="Self.FK_Product_ProductCategories" FromRole="ProductCategories" ToRole="Product" />
+    <NavigationProperty Name="ProductCategories1" Relationship="Self.FK_ProductCategories_ProductCategories" FromRole="ProductCategories" ToRole="ProductCategories1" />
+    <NavigationProperty Name="ProductCategory1" Relationship="Self.FK_ProductCategories_ProductCategories" FromRole="ProductCategories1" ToRole="ProductCategories" />
+  </EntityType>
+  <EntityType Name="Staff">
+    <Key>
+      <PropertyRef Name="StaffID" />
+    </Key>
+    <Property Name="StaffID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="StaffName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="DateOfBirth" Type="DateTime" Precision="0" />
+    <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="Address" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="Status" Type="Boolean" />
+    <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="StoreID" Type="Int32" />
+    <Property Name="Gender" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="PhoneNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="GroupID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="BaseSalary" Type="Double" />
+    <NavigationProperty Name="Orders" Relationship="Self.FK_Order_Staff" FromRole="Staff" ToRole="Order" />
+    <NavigationProperty Name="Store" Relationship="Self.FK_Staff_Store" FromRole="Staff" ToRole="Store" />
+    <NavigationProperty Name="UserGroup" Relationship="Self.FK_Staff_UserGroup" FromRole="Staff" ToRole="UserGroup" />
+  </EntityType>
+  <EntityType Name="Store">
+    <Key>
+      <PropertyRef Name="StoreID" />
+    </Key>
+    <Property Name="StoreID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="StoreName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="StoreAddress" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="StoreEmail" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="StorePhone" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Staffs" Relationship="Self.FK_Staff_Store" FromRole="Store" ToRole="Staff" />
+  </EntityType>
+  <EntityType Name="UserAction">
+    <Key>
+      <PropertyRef Name="ActionID" />
+    </Key>
+    <Property Name="ActionID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="ActionName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="UserGroups" Relationship="Self.Credential" FromRole="UserActions" ToRole="UserGroup" />
+  </EntityType>
+  <EntityType Name="UserGroup">
+    <Key>
+      <PropertyRef Name="GroupID" />
+    </Key>
+    <Property Name="GroupID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="GroupName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Staffs" Relationship="Self.FK_Staff_UserGroup" FromRole="UserGroup" ToRole="Staff" />
+    <NavigationProperty Name="UserActions" Relationship="Self.Credential" FromRole="UserGroup" ToRole="UserActions" />
+  </EntityType>
+  <Association Name="FK_Product_Brand">
+    <End Role="Brand" Type="Self.Brand" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Product" Type="Self.Product" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Brand">
+        <PropertyRef Name="BrandID" />
+      </Principal>
+      <Dependent Role="Product">
+        <PropertyRef Name="BrandID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Order_OrderStatus">
+    <End Role="OrderStatus" Type="Self.OrderStatu" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Order" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="OrderStatus">
+        <PropertyRef Name="StatusID" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="StatusID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Order_PaymentMethod">
+    <End Role="PaymentMethod" Type="Self.PaymentMethod" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Order" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PaymentMethod">
+        <PropertyRef Name="PaymentMethodID" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="PaymentMethodID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Order_Staff">
+    <End Role="Staff" Type="Self.Staff" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Order" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Staff">
+        <PropertyRef Name="StaffID" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="StaffID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OrderProduct_Order">
+    <End Role="Order" Type="Self.Order" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="OrderID" />
+      </Principal>
+      <Dependent Role="OrderProduct">
+        <PropertyRef Name="OrderID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OrderProduct_Product">
+    <End Role="Product" Type="Self.Product" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="ProductID" />
+      </Principal>
+      <Dependent Role="OrderProduct">
+        <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Product_ProductCategories">
+    <End Role="ProductCategories" Type="Self.ProductCategory" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Product" Type="Self.Product" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ProductCategories">
+        <PropertyRef Name="ProductCateID" />
+      </Principal>
+      <Dependent Role="Product">
+        <PropertyRef Name="ProductCateID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductCategories_ProductCategories">
+    <End Role="ProductCategories" Type="Self.ProductCategory" Multiplicity="0..1" />
+    <End Role="ProductCategories1" Type="Self.ProductCategory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ProductCategories">
+        <PropertyRef Name="ProductCateID" />
+      </Principal>
+      <Dependent Role="ProductCategories1">
+        <PropertyRef Name="ProductCateParentsID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Staff_Store">
+    <End Role="Store" Type="Self.Store" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Staff" Type="Self.Staff" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Store">
+        <PropertyRef Name="StoreID" />
+      </Principal>
+      <Dependent Role="Staff">
+        <PropertyRef Name="StoreID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Staff_UserGroup">
+    <End Role="UserGroup" Type="Self.UserGroup" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Staff" Type="Self.Staff" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="UserGroup">
+        <PropertyRef Name="GroupID" />
+      </Principal>
+      <Dependent Role="Staff">
+        <PropertyRef Name="GroupID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="Credential">
+    <End Role="UserActions" Type="Self.UserAction" Multiplicity="*" />
+    <End Role="UserGroup" Type="Self.UserGroup" Multiplicity="*" />
+  </Association>
+  <EntityContainer Name="ABCosmeticEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Brands" EntityType="Self.Brand" />
+    <EntitySet Name="Orders" EntityType="Self.Order" />
+    <EntitySet Name="OrderProducts" EntityType="Self.OrderProduct" />
+    <EntitySet Name="OrderStatus" EntityType="Self.OrderStatu" />
+    <EntitySet Name="PaymentMethods" EntityType="Self.PaymentMethod" />
+    <EntitySet Name="Products" EntityType="Self.Product" />
+    <EntitySet Name="ProductCategories" EntityType="Self.ProductCategory" />
+    <EntitySet Name="Staffs" EntityType="Self.Staff" />
+    <EntitySet Name="Stores" EntityType="Self.Store" />
+    <EntitySet Name="UserActions" EntityType="Self.UserAction" />
+    <EntitySet Name="UserGroups" EntityType="Self.UserGroup" />
+    <AssociationSet Name="FK_Product_Brand" Association="Self.FK_Product_Brand">
+      <End Role="Brand" EntitySet="Brands" />
+      <End Role="Product" EntitySet="Products" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Order_OrderStatus" Association="Self.FK_Order_OrderStatus">
+      <End Role="OrderStatus" EntitySet="OrderStatus" />
+      <End Role="Order" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Order_PaymentMethod" Association="Self.FK_Order_PaymentMethod">
+      <End Role="PaymentMethod" EntitySet="PaymentMethods" />
+      <End Role="Order" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Order_Staff" Association="Self.FK_Order_Staff">
+      <End Role="Staff" EntitySet="Staffs" />
+      <End Role="Order" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OrderProduct_Order" Association="Self.FK_OrderProduct_Order">
+      <End Role="Order" EntitySet="Orders" />
+      <End Role="OrderProduct" EntitySet="OrderProducts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OrderProduct_Product" Association="Self.FK_OrderProduct_Product">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="OrderProduct" EntitySet="OrderProducts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Product_ProductCategories" Association="Self.FK_Product_ProductCategories">
+      <End Role="ProductCategories" EntitySet="ProductCategories" />
+      <End Role="Product" EntitySet="Products" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductCategories_ProductCategories" Association="Self.FK_ProductCategories_ProductCategories">
+      <End Role="ProductCategories" EntitySet="ProductCategories" />
+      <End Role="ProductCategories1" EntitySet="ProductCategories" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Staff_Store" Association="Self.FK_Staff_Store">
+      <End Role="Store" EntitySet="Stores" />
+      <End Role="Staff" EntitySet="Staffs" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Staff_UserGroup" Association="Self.FK_Staff_UserGroup">
+      <End Role="UserGroup" EntitySet="UserGroups" />
+      <End Role="Staff" EntitySet="Staffs" />
+    </AssociationSet>
+    <AssociationSet Name="Credential" Association="Self.Credential">
+      <End Role="UserActions" EntitySet="UserActions" />
+      <End Role="UserGroup" EntitySet="UserGroups" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

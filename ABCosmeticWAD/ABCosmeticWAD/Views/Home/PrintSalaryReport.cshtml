@@ -1,0 +1,89 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Common
+@using ABCosmeticWAD.Models
+
+@{
+    Staff session = (Staff)Session[CommonConstants.USER_SESSION];
+    if (ViewBag.Time == "null")
+    {
+        ViewBag.Time = " ";
+    }
+    List<Salary> salary = (List<Salary>)ViewBag.Salary;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Print salary report</title>
+    <!-- Bootstrap core CSS-->
+    <link href="~/Assets/Admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom fonts for this template-->
+    <link href="~/Assets/Admin/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom styles for this template-->
+    <link href="~/Assets/Admin/css/sb-admin.css" rel="stylesheet">
+    <!-- Page level plugin CSS-->
+    <link href="~/Assets/Admin/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid" style="margin-top:10px;width:100%;height:auto;border:1px solid black;border-radius:5px">
+        <div class="col-lg-12" style="margin-bottom:20px;margin-top:20px">
+            <h3 class="text-capitalize text-center">Report on Salary</h3>
+            <p class="text-center">@ViewBag.Time</p>
+            <p class="text-center">Printed by: @session.StaffName</p>
+            <p class="text-center">Printed date: @DateTime.Now</p>
+        </div>
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa fa-table"></i> Staff list
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered" style="width:100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Store</th>
+                            <th>Base salary</th>
+                            <th>Bonus</th>
+                            <th>Total Salary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Salary sal in salary)
+                        {
+                            if(sal.Bonus == null)
+                            {
+                                sal.Bonus = 0;
+                            }
+                            <tr>
+                                <td>@sal.StaffID</td>
+                                <td>@sal.StaffName</td>
+                                <td>@sal.StoreName</td>
+                                <td>@sal.BaseSalary</td>
+                                <td>$@sal.Bonus</td>
+                                <td><strong>$@(sal.Bonus + sal.BaseSalary)</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="~/Assets/Admin/vendor/jquery/jquery.min.js"></script>
+    <script src="~/Assets/Admin/vendor/popper/popper.min.js"></script>
+    <script src="~/Assets/Admin/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    @*<script src="vendor/jquery-easing/jquery.easing.min.js"></script>*@
+    <!-- Custom scripts for all pages-->
+    <script src="~/Assets/Admin/js/sb-admin.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/Assets/Admin/vendor/datatables/jquery.dataTables.js"></script>
+    <script src="~/Assets/Admin/vendor/datatables/dataTables.bootstrap4.js"></script>
+    <script src="~/Assets/Admin/js/sb-admin-datatables.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="b92767068dce458e8e83e56abb524119" Name="Diagram1">
+        <EntityTypeShape EntityType="ABCosmeticModel.Brand" Width="1.5" PointX="5.25" PointY="13.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.Order" Width="1.5" PointX="7.5" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.OrderProduct" Width="1.5" PointX="9.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.OrderStatu" Width="1.5" PointX="5.25" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.PaymentMethod" Width="1.5" PointX="5.25" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.Product" Width="1.5" PointX="7.5" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.ProductCategory" Width="1.5" PointX="5.25" PointY="15.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.Staff" Width="1.5" PointX="5.25" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.Store" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.UserAction" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="ABCosmeticModel.UserGroup" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
+        <AssociationConnector Association="ABCosmeticModel.FK_Product_Brand" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_Order_OrderStatus" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_Order_PaymentMethod" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_Order_Staff" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_OrderProduct_Order" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_OrderProduct_Product" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_Product_ProductCategories" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_ProductCategories_ProductCategories" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_Staff_Store" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.FK_Staff_UserGroup" ManuallyRouted="false" />
+        <AssociationConnector Association="ABCosmeticModel.Credential" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

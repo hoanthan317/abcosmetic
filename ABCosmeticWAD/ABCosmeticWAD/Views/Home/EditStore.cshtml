@@ -1,0 +1,41 @@
+﻿@using ABCosmeticWAD.Models
+@model Store
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var s = ViewBag.Store;
+}
+@section section{
+    Edit Store Information
+}
+
+<div class="row" style="margin-top: 30px">
+    <div class="col-lg-12">
+        <div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card mb-3">
+                        <h2 class="card-header">Edit Store Information</h2>
+                    </div>
+                    <div class="card-body">
+                        @using (Html.BeginForm("UpdateStore", "Home", FormMethod.Post))
+                        {
+                            <label>Store ID</label>
+                            @Html.TextBoxFor(st => st.StoreID, htmlAttributes: new { @class = "form-control", @readonly = "readonly", Value = s.StoreID})
+                            <label>Store Name</label>
+                            @Html.TextBoxFor(st => st.StoreName, htmlAttributes: new { @class = "form-control", Value = s.StoreName })
+                            <label>Email</label>
+                            @Html.TextBoxFor(st => st.StoreEmail, htmlAttributes: new { @class = "form-control", @type = "email", Value = s.StoreEmail })
+                            <label>Address</label>
+                            @Html.TextBoxFor(st => st.StoreAddress, htmlAttributes: new { @class = "form-control", Value = s.StoreAddress })
+                            <label>Phone number</label>
+                            @Html.TextBoxFor(st => st.StorePhone, htmlAttributes: new { @class = "form-control", Value = s.StorePhone })
+                            <br />
+                            <a href="@Url.Action("Stores", "Home")">Cancel</a>
+                            <input type="submit" class="btn btn-primary float-right" name="UpdateStore" value="Update" />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

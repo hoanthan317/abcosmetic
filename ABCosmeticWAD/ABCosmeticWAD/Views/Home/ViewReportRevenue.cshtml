@@ -1,0 +1,144 @@
+﻿@using ABCosmeticWAD.Models
+@using ABCosmeticWAD.Models.EF
+@{
+    var store = ViewBag.Store;
+    ABCosmeticEntities db = new ABCosmeticEntities();
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section section{
+    Revenue
+}
+
+<div class="row d-inline">
+    <div class="col-lg-12">
+        <h5>
+            View reports by:&nbsp;
+            <span>
+                <a href="#" onclick="monthForm()" class="btn btn-outline-info">Month</a>&nbsp;
+                <a href="#" onclick="weekForm()" class="btn btn-outline-info">Week</a>&nbsp;
+                <a href="#" onclick="dateForm()" class="btn btn-outline-info">Date range</a>
+            </span>
+        </h5>
+    </div>
+    <div class="col-lg-12" id="month">
+        <form method="get" action="/Home/ViewReportRevenueByMonth" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>Month:&nbsp;</label>
+                <input type="month" id="monthBox" name="month" required class="form-control input-sm" />&nbsp;
+                <input type="submit" class="btn btn-outline-info" value="View" />
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12" id="week">
+        <form action="/Home/ViewReportRevenueByDate" method="get" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>From date:&nbsp;</label>
+                <input type="date" onchange="fromDate()" required id="from" name="from" class="form-control input-sm" />&nbsp;
+                <label>- To date:&nbsp;</label>
+                <input type="date" name="to" id="to" required class="form-control input-sm" onchange="toDate()" />&nbsp;
+                <input type="submit" class="btn btn-outline-info" value="View" />
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-12" id="date">
+        <form action="/Home/ViewReportRevenueByDate" method="get" class="form-inline">
+            <div class="form-group col-sm-12">
+                <label>From date:&nbsp;</label>
+                <input type="date" id="fromDate" required name="from" class="form-control input-sm" />&nbsp;
+                <label>- To date:&nbsp;</label>
+                <input type="date" name="to" id="toDate" required class="form-control input-sm" />&nbsp;
+                <input type="submit" class="btn btn-outline-info" value="View" />
+            </div>
+        </form>
+    </div>
+</div>
+@foreach (StoreRevenue st in store)
+{
+    double? total = 0;
+    <hr />
+    <div class="card">
+        <div class="card-header text-center">
+            <h5>@st.StoreName</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered" id="dataTable" style="width:100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer name</th>
+                        <th>Created date</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (OrderPrice odp in st.Order)
+                    {
+                        <tr>
+                            <td><a href="@Url.Action("OrderDetail", "Home", routeValues: new { id = odp.OrderID })">@odp.OrderID</a></td>
+                            <td>@odp.CustomerName</td>
+                            <td>@odp.CreatedDate</td>
+                            <td>$@odp.TotalPrice</td>
+                            @Html.Hidden((total += odp.TotalPrice).ToString())
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-center">Total: <strong>$@total</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+}
+
+@section Script{
+    <script>
+        $(document).ready(function () {
+            $("#month").hide();
+            $("#week").hide();
+            $("#date").hide();
+        });
+        function monthForm() {
+            $("#month").show();
+            $("#week").hide();
+            $("#date").hide();
+        };
+
+        function weekForm() {
+            $("#week").show();
+            $("#month").hide();
+            $("#date").hide();
+        }
+
+        function dateForm() {
+            $("#month").hide();
+            $("#week").hide();
+            $("#date").show();
+        }
+
+        function fromDate() {
+            var fromDate = new Date($("#from").val());
+            var newDate = new Date(fromDate);
+            newDate.setDate(newDate.getDate() + 7);
+            var toDate = new Date(newDate);
+            var day = ("0" + toDate.getDate()).slice(-2);
+            var month = ("0" + (toDate.getMonth() + 1)).slice(-2);
+            var to = toDate.getFullYear() + "-" + (month) + "-" + (day);
+            $("#to").val(to);
+        }
+
+        function toDate() {
+            var toDate = new Date($("#to").val());
+            var newDate = new Date(toDate);
+            newDate.setDate(newDate.getDate() - 7);
+            var fromDate = new Date(newDate);
+            var day = ("0" + fromDate.getDate()).slice(-2);
+            var month = ("0" + (fromDate.getMonth() + 1)).slice(-2);
+            var from = fromDate.getFullYear() + "-" + (month) + "-" + (day);
+            $("#from").val(from);
+        }
+    </script>
+}

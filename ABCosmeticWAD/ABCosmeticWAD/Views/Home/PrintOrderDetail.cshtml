@@ -1,0 +1,118 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Common
+@using ABCosmeticWAD.Models
+@{
+    var id = TempData["id"];
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Print Order</title>
+    <!-- Bootstrap core CSS-->
+    <link href="~/Assets/Admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom fonts for this template-->
+    <link href="~/Assets/Admin/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom styles for this template-->
+    <link href="~/Assets/Admin/css/sb-admin.css" rel="stylesheet">
+    <!-- Page level plugin CSS-->
+    <link href="~/Assets/Admin/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid" ng-app="myApp" ng-controller="myCtrl" style="margin-top:10px;width:100%;height:auto;border:1px solid black;border-radius:5px">
+        <div class="col-md-12" style="margin-bottom:20px;margin-top:20px">
+            <h3 class="text-capitalize text-center">Order detail</h3>
+            <p class="text-center">Order ID: <strong>{{order.OrderID}}</strong></p>
+        </div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>Customer: {{order.CustomerName}}</p>
+                    <p>Contact phone: </p>
+                    <p>Staff name: {{order.StaffName}}</p>
+                    <p>Store: {{order.Store}}</p>
+                    <p>Created date: {{order.CreatedDate}}</p>
+                    <p>Payment method: {{order.PaymentMethodID}}</p>
+                </div>
+                <div class="col-md-6">
+                    <p>Shipping address: {{order.ShippingAddress}}</p>
+                    <p>Delivered date: {{order.ShipDate}}</p>
+                    <p>Note:</p>
+                    <textarea rows="4" readonly style="width:100%">{{order.Note}}</textarea>
+                    <p>Last modified date: {{order.ModifiedDate}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-header">
+                <i class="fa fa-table"></i> Staff list
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered" style="width:100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Unit Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="x in product">
+                            <td>{{x.ProductID}}</td>
+                            <td>{{x.ProductName}}</td>
+                            <td>${{x.UnitPrice}}</td>
+                            <td>{{x.Quantity}}</td>
+                            <td>${{x.Quantity * x.UnitPrice}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="text-center" colspan="5">
+                                Total: <strong>${{getTotal()}}</strong>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="~/Assets/Admin/vendor/jquery/jquery.min.js"></script>
+    <script src="~/Assets/Admin/vendor/popper/popper.min.js"></script>
+    <script src="~/Assets/Admin/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    @*<script src="vendor/jquery-easing/jquery.easing.min.js"></script>*@
+    <!-- Custom scripts for all pages-->
+    <script src="~/Assets/Admin/js/sb-admin.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/Assets/Admin/vendor/datatables/jquery.dataTables.js"></script>
+    <script src="~/Assets/Admin/vendor/datatables/dataTables.bootstrap4.js"></script>
+    <script src="~/Assets/Admin/js/sb-admin-datatables.min.js"></script>
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($http, $scope) {
+            $http.get("/api/Order/" + @id).then(function (response) {
+                $scope.order = response.data;
+            });
+            $http.get("/api/OrderDetail/" + @id).then(function (response) {
+                $scope.product = response.data;
+            });
+
+            $scope.getTotal = function () {
+                var total = 0;
+                for (var i = 0; i < $scope.product.length; i++) {
+                    var product = $scope.product[i];
+                    total += (product.UnitPrice * product.Quantity);
+                };
+                return total;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+﻿@using ABCosmeticWAD.Models.EF
+@using ABCosmeticWAD.Common
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@section section{
+    Orders
+}
+@if (TempData["error"] != null)
+{
+    <p class="text-center text-danger">@TempData["error"]</p>
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fa fa-table"></i> Order list
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" style="width:100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Name</th>
+                        <th>Contact Phone</th>
+                        <th>Staff Name</th>
+                        <th>Store</th>
+                        <th>Order Date</th>
+                        <th>Ship Date</th>
+                        <th>Payment Method</th>
+                        <th>Modified Date</th>
+                        <th>Detail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="x in data">
+                        <td>{{x.OrderID}}</td>
+                        <td>{{x.CustomerName}}</td>
+                        <td>{{x.ContactPhone}}</td>
+                        <td>{{x.StaffName}}</td>
+                        <td>{{x.Store}}</td>
+                        <td>{{x.OrderDate}}</td>
+                        <td>{{x.ShipDate}}</td>
+                        <td>{{x.PaymentMethodID}}</td>
+                        <td>{{x.ModifiedDate}}</td>
+                        <td class="text-center">
+                            <a href="/Home/OrderDetail/{{x.OrderID}}">
+                                <i class="fa fa-sticky-note-o"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Script{
+    <script>
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($http, $scope) {
+            $http.get("/api/Order").then(function (response) {
+                $scope.data = response.data;
+            });
+        });
+    </script>
+}

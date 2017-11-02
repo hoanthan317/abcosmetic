@@ -1,0 +1,52 @@
+﻿@using ABCosmeticWAD.Models.EF
+@model LoginModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>ABCosmetic - Login</title>
+    <!-- Bootstrap core CSS-->
+    <link href="~/Assets/Admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom fonts for this template-->
+    <link href="~/Assets/Admin/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- Custom styles for this template-->
+    <link href="~/Assets/Admin/css/sb-admin.css" rel="stylesheet">
+</head>
+<body class="bg-dark">
+    <div class="container">
+        <div class="card card-login mx-auto mt-5">
+            <div class="card-header">Login</div>
+            <div class="card-body">
+                @using (Html.BeginForm("Login", "Login", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true, "", htmlAttributes: new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.StaffID)
+                        @Html.TextBoxFor(m => m.StaffID, htmlAttributes: new { @class = "form-control", @placeholder = "Enter Staff ID" })
+                        @Html.ValidationMessageFor(m => m.StaffID, "", htmlAttributes: new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password)
+                        @Html.TextBoxFor(m => m.Password, htmlAttributes: new { @class = "form-control", @placeholder = "Enter Password", @type = "Password" })
+                        @Html.ValidationMessageFor(m => m.Password, "", htmlAttributes: new { @class = "text-danger" })
+                    </div>
+                    <input type="submit" name="Login" value="Login" class="btn btn-primary btn-block" />
+                }
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap core JavaScript-->
+    <script src="~/Assets/Admin/vendor/jquery/jquery.min.js"></script>
+    <script src="~/Assets/Admin/vendor/popper/popper.min.js"></script>
+    <script src="~/Assets/Admin/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="~/Assets/Admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+</body>
+</html>

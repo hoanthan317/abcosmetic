@@ -1,0 +1,57 @@
+﻿@using ABCosmeticWAD.Models
+@model Product
+@{
+    ViewBag.Title = "CreateProduct";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section section{
+    New Product
+}
+
+<div id="createForm" class="row" style="margin-top: 30px">
+    <div class="col-lg-12">
+        <div>
+            <div class="col-md-12">
+                <div class="card mb-3">
+                    <div class="card mb-3">
+                        <h2 class="card-header">New Product</h2>
+                    </div>
+                    <div class="card-body">
+                        @using (Html.BeginForm("CreateProduct", "Home", FormMethod.Post))
+                        {
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    @Html.LabelFor(p => p.ProductName)
+                                    @Html.TextBoxFor(p => p.ProductName, htmlAttributes: new { @class = "form-control" })
+                                    @Html.LabelFor(p => p.BrandID)
+                                    @Html.DropDownListFor(p => p.BrandID, new SelectList(ViewBag.Brand, "BrandID", "BrandName"), "Select Brand", htmlAttributes: new { @class = "form-control" })
+                                    @Html.LabelFor(p => p.ProductCateID)
+                                    @Html.DropDownListFor(p => p.ProductCateID, new SelectList(ViewBag.Cate, "ProductCateID", "CategoriesName"), "Select Category", htmlAttributes: new { @class = "form-control" })
+                                    @Html.LabelFor(p => p.Model)
+                                    @Html.TextBoxFor(p => p.Model, htmlAttributes: new { @class = "form-control" })
+                                    @Html.LabelFor(p => p.UnitPrice)
+                                    @Html.TextBoxFor(p => p.UnitPrice, htmlAttributes: new { @class = "form-control", @type = "number" })
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    @Html.LabelFor(p => p.Description)
+                                    @Html.TextAreaFor(p => p.Description, htmlAttributes: new { @class = "form-control" })
+                                    @Html.LabelFor(p => p.Detail)
+                                    @Html.TextAreaFor(p => p.Detail, htmlAttributes: new { @class = "form-control" })
+                                    @Html.LabelFor(p => p.UnitInStock)
+                                    @Html.TextBoxFor(p => p.UnitInStock, htmlAttributes: new { @class = "form-control", @type = "number" })
+                                </div>
+                                <div class="form-group col-lg-5">
+                                    <a href="@Url.Action("Product", "Home")" style="margin-right: 20px">Cancel</a>
+                                </div>
+                                <div class="form-group col-lg-7">
+                                    <input type="submit" class="btn btn-primary" style="margin-left:20px" name="CreateProduct" value="Create" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
